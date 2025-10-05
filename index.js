@@ -38,26 +38,10 @@ const upload = multer({ storage });
 const app = express();
 app.use(cors());
 
-const allowedOrigins = [
-  'https://codeformates.onrender.com',
-  'http://localhost:3000', // for local testing
-  'https://https://codefomates.vercel.app',
-  'https://codeformates.com'
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed from this origin'));
-    }
-  },
+  origin: '*',
   methods: ['GET','POST','PUT','DELETE'],
-  credentials: true
+  // Note: credentials (cookies, auth headers) **cannot** be used with '*'
 }));
 
 
