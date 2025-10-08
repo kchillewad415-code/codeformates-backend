@@ -377,4 +377,23 @@ app.post('/forgot-password', async (req, res) => {
     res.status(500).json({ error: 'Failed to send reset email.' });
   }
 });
+
+// Password reset request endpoint
+app.post('/reOpenNotification', async (req, res) => {
+  const { user, issue } = req.body;
+  try {
+    // Generate a simple token (for demo; use JWT or crypto for production)
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/livesession/${issue._id}`;
+    await sendEmailNotification(
+      user.email,
+      'Issue you resolved is reOpened by a user',
+      issue.isOpen ?
+      `Hi ${user.username},\n\nIssue you resolved is reOpened by a user, click the link below to go to the chat room:\n${resetUrl}\n\n`
+      : `Hi ${user.username},\n\nCongratulations.....!!!!! \n\nIssue you worked on is closed by a user, Keep it up your contribution.....!!!!!\n\n`
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to send reset email.' });
+  }
+});
 httpServer.listen(PORT, () => console.log(`CodeMate backend running on port ${PORT}`));
