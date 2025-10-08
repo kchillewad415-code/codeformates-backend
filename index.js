@@ -245,6 +245,31 @@ io.on('connection', (socket) => {
     // Send chat history to the user
     const messages = await Message.find({ roomId }).sort({ time: 1 });
     socket.emit('chatHistory', messages);
+
+      // Handle WebRTC offer
+
+  });
+    socket.on('offer', ({ roomId, offer }) => {
+    console.log(`Offer from ${socket.id} for room ${roomId}`);
+    socket.to(roomId).emit('offer', offer);
+  });
+
+  // Handle WebRTC answer
+  socket.on('answer', ({ roomId, answer }) => {
+    console.log(`Answer from ${socket.id} for room ${roomId}`);
+    socket.to(roomId).emit('answer', answer);
+  });
+
+  // Handle ICE candidates
+  socket.on('ice-candidate', ({ roomId, candidate }) => {
+    console.log(`ICE candidate from ${socket.id} for room ${roomId}`);
+    socket.to(roomId).emit('ice-candidate', candidate);
+  });
+
+  // Handle when user ends video
+  socket.on('endVideo', (roomId) => {
+    console.log(`User ${socket.id} ended video in room ${roomId}`);
+    socket.to(roomId).emit('endVideo');
   });
 
   socket.on('chatMessage', async ({ roomId, message, sender, email }) => {
