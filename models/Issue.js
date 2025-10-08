@@ -8,6 +8,7 @@ const IssueSchema = new mongoose.Schema({
   file: { type: Object },
   isOpen: { type: Boolean, default: true },
   userid: { type: String },
+  resolvedBy: { type: String, default: null },
 }, { timestamps: true });
 
 export default mongoose.model('Issue', IssueSchema);
