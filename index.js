@@ -40,7 +40,7 @@ app.use(cors());
 
 app.use(cors({
   origin: '*',
-  methods: ['GET','POST','PUT','DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   // Note: credentials (cookies, auth headers) **cannot** be used with '*'
 }));
 
@@ -193,7 +193,7 @@ app.put('/users/:id', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   console.log('Password received at login:', password); // Debugging line
-  
+
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid email or password' });
@@ -246,10 +246,10 @@ io.on('connection', (socket) => {
     const messages = await Message.find({ roomId }).sort({ time: 1 });
     socket.emit('chatHistory', messages);
 
-      // Handle WebRTC offer
+    // Handle WebRTC offer
 
   });
-    socket.on('offer', ({ roomId, offer }) => {
+  socket.on('offer', ({ roomId, offer }) => {
     console.log(`Offer from ${socket.id} for room ${roomId}`);
     socket.to(roomId).emit('offer', offer);
   });
@@ -386,10 +386,10 @@ app.post('/reOpenNotification', async (req, res) => {
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/livesession/${issue._id}`;
     await sendEmailNotification(
       user.email,
-      issue.isOpen ? 'Issue you resolved is reOpened by a user': 'Issue you worked on is closed by a user',
+      issue.isOpen ? 'Issue you resolved is reOpened by a user' : 'Issue you worked on is closed by a user',
       issue.isOpen ?
-      `Hi ${user.username},\n\nIssue you resolved is reOpened by a user, click the link below to go to the chat room:\n${resetUrl}\n\n`
-      : `Hi ${user.username},\n\nCongratulations.....!!!!! \n\nIssue you worked on is closed by a user, Keep it up your contribution.....!!!!!\n\n`
+        `Hi ${user.username},\n\nIssue you resolved is reOpened by a user, click the link below to go to the chat room:\n${resetUrl}\n\n`
+        : `Hi ${user.username},\n\nCongratulations.....!!!!! \n\nIssue you worked on is closed by a user, Keep it up your contribution.....!!!!!\n\n`
     );
     res.json({ success: true });
   } catch (err) {
