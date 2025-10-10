@@ -235,9 +235,8 @@ app.get('/chat/:roomId', async (req, res) => {
 const connectedUsers = new Map();
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-  io.emit('onlineUsers', onlineUsers);
-socket.on("registerUser", (userId) => {
-    if(!connectedUsers.has(userId)){
+  socket.on("registerUser", (userId) => {
+    if (!connectedUsers.has(userId)) {
       connectedUsers.set(userId, new Set());
     }
     connectedUsers.get(userId).add(socket.id);
