@@ -9,6 +9,7 @@ const IssueSchema = new mongoose.Schema({
   isOpen: { type: Boolean, default: true },
   userid: { type: String },
   resolvedBy: { type: String, default: null },
+  solution: { type: String, default: null },
 }, { timestamps: true });
 
 export default mongoose.model('Issue', IssueSchema);
