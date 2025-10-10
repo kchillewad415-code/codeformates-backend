@@ -232,10 +232,12 @@ app.get('/chat/:roomId', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+let onlineUsers = 0;
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-
+  onlineUsers++;
+  io.emit('onlineUsers', onlineUsers);
   socket.on('joinRoom', async (roomId, username) => {
     socket.join(roomId);
     // Add user to roomUsers
@@ -300,6 +302,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    onlineUsers--;
+    io.emit('onlineUsers', onlineUsers);
+    // Clean up user from roomUsers
     // Remove user from all rooms
     for (const roomId in roomUsers) {
       roomUsers[roomId].delete(socket.username);
