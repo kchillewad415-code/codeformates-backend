@@ -13,6 +13,15 @@ const UserSchema = new mongoose.Schema({
   linkedin: { type: String, default: "" },
   github: { type: String, default: "" },
   badges: { type: [String], default: [] },
+  resolvedHistory: [
+    {
+      issueId: String,
+      title: String,
+      language: String,
+      urgency: String,
+      resolvedOn: { type: Date, default: Date.now },
+    },
+  ],
   resetToken: { type: String },
   resetTokenExpiry: { type: Date },
 }, { timestamps: true });
