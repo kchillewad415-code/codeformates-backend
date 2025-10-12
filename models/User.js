@@ -15,10 +15,11 @@ const UserSchema = new mongoose.Schema({
   badges: { type: [String], default: [] },
   resolvedHistory: [
     {
-      issueId: String,
-      title: String,
-      language: String,
-      urgency: String,
+      issueId: { type: String, default: "" },
+      title: { type: String, default: "" },
+      language: { type: String, default: "" },
+      urgency: { type: String, default: "" },
+      solution :{type: String, default: ""},
       resolvedOn: { type: Date, default: Date.now },
     },
   ],
