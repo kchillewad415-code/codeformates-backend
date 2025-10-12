@@ -206,12 +206,29 @@ app.put('/users/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedItem = await User.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json({ message: "Item deleted successfully", deletedItem });
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 
 
 // POST /login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('Password received at login:', password); // Debugging line
 
   try {
     const user = await User.findOne({ email });
@@ -253,7 +270,6 @@ app.get('/chat/:roomId', async (req, res) => {
 });
 const connectedUsers = new Map();
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
   socket.on("registerUser", (userId) => {
     if (!connectedUsers.has(userId)) {
       connectedUsers.set(userId, new Set());
@@ -266,7 +282,6 @@ io.on('connection', (socket) => {
     // Add user to roomUsers
     if (!roomUsers[roomId]) roomUsers[roomId] = new Set();
     roomUsers[roomId].add(username);
-    console.log(`User ${socket.id} joined room ${roomId}`);
     // Send chat history to the user
     const messages = await Message.find({ roomId }).sort({ time: 1 });
     socket.emit('chatHistory', messages);
@@ -275,25 +290,21 @@ io.on('connection', (socket) => {
 
   });
   socket.on('offer', ({ roomId, offer }) => {
-    console.log(`Offer from ${socket.id} for room ${roomId}`);
     socket.to(roomId).emit('offer', offer);
   });
 
   // Handle WebRTC answer
   socket.on('answer', ({ roomId, answer }) => {
-    console.log(`Answer from ${socket.id} for room ${roomId}`);
     socket.to(roomId).emit('answer', answer);
   });
 
   // Handle ICE candidates
   socket.on('ice-candidate', ({ roomId, candidate }) => {
-    console.log(`ICE candidate from ${socket.id} for room ${roomId}`);
     socket.to(roomId).emit('ice-candidate', candidate);
   });
 
   // Handle when user ends video
   socket.on('endVideo', (roomId) => {
-    console.log(`User ${socket.id} ended video in room ${roomId}`);
     socket.to(roomId).emit('endVideo');
   });
 
@@ -338,7 +349,6 @@ io.on('connection', (socket) => {
     for (const roomId in roomUsers) {
       roomUsers[roomId].delete(socket.username);
     }
-    console.log('User disconnected:', socket.id);
   });
 });
 
