@@ -112,6 +112,25 @@ app.put('/issues/:id', async (req, res) => {
   }
 });
 
+
+//Delete /Issues
+
+app.delete("/issues/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedItem = await Issue.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.status(200).json({ message: "Item deleted successfully", deletedItem });
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // POST /sessions
 app.post('/sessions', async (req, res) => {
   try {
