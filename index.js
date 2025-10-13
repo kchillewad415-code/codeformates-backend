@@ -440,4 +440,22 @@ app.post('/reOpenNotification', async (req, res) => {
     res.status(500).json({ error: 'Failed to send reset email.' });
   }
 });
+
+
+
+const allowedIP = '106.221.14.134'; // your IP
+const adminUsername = 'admin';
+
+app.post('/api/admin-access', (req, res) => {
+  const { username } = req.body;
+  const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+  if (username === adminUsername && userIP.includes(allowedIP)) {
+    return res.json({ allowed: true });
+  } else {
+    return res.json({ allowed: false });
+  }
+});
+
+
 httpServer.listen(PORT, () => console.log(`CodeMate backend running on port ${PORT}`));
