@@ -277,17 +277,23 @@ io.on('connection', (socket) => {
     connectedUsers.get(userId).add(socket.id);
     io.emit('onlineUsers', connectedUsers.size);
   });
-  socket.on('joinRoom', async (roomId, username) => {
+ socket.on('joinRoom', (roomId, username, callback) => {
+    if (!rooms[roomId]) rooms[roomId] = [];
+    rooms[roomId].push(socket.id);
+
+    // Assign role: first user is offerer, second is answerer
+    if (rooms[roomId].length === 1) {
+      callback && callback('offerer');
+    } else {
+      callback && callback('answerer');
+    }
     socket.join(roomId);
-    // Add user to roomUsers
-    if (!roomUsers[roomId]) roomUsers[roomId] = new Set();
-    roomUsers[roomId].add(username);
-    // Send chat history to the user
-    const messages = await Message.find({ roomId }).sort({ time: 1 });
-    socket.emit('chatHistory', messages);
 
-    // Handle WebRTC offer
-
+    // Clean up on disconnect
+    socket.on('disconnect', () => {
+      rooms[roomId] = (rooms[roomId] || []).filter(id => id !== socket.id);
+      if (rooms[roomId] && rooms[roomId].length === 0) delete rooms[roomId];
+    });
   });
   socket.on('offer', ({ roomId, offer }) => {
     socket.to(roomId).emit('offer', offer);
