@@ -336,7 +336,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-
+rooms[roomId] = (rooms[roomId] || []).filter(id => id !== socket.id);
+    if (rooms[roomId] && rooms[roomId].length === 0) delete rooms[roomId];
     for (const [userId, sockets] of connectedUsers.entries()) {
       sockets.delete(socket.id);
       if (sockets.size === 0) {
@@ -349,8 +350,7 @@ io.on('connection', (socket) => {
     for (const roomId in roomUsers) {
       roomUsers[roomId].delete(socket.username);
     }
-    rooms[roomId] = (rooms[roomId] || []).filter(id => id !== socket.id);
-    if (rooms[roomId] && rooms[roomId].length === 0) delete rooms[roomId];
+    
   });
 });
 
