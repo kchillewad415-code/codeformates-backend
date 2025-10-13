@@ -288,7 +288,7 @@ io.on('connection', (socket) => {
 
     // Handle WebRTC offer
 
-  });
+
   socket.on('offer', ({ roomId, offer }) => {
     socket.to(roomId).emit('offer', offer);
   });
@@ -334,7 +334,7 @@ io.on('connection', (socket) => {
     //   sendEmailNotification(email, `You sent a message in chatroom ${roomId}`, `You: ${message}`);
     // }
   });
-
+  });
   socket.on('disconnect', () => {
 
     for (const [userId, sockets] of connectedUsers.entries()) {
