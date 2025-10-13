@@ -288,12 +288,6 @@ io.on('connection', (socket) => {
       callback && callback('answerer');
     }
     socket.join(roomId);
-
-    // Clean up on disconnect
-    socket.on('disconnect', () => {
-      rooms[roomId] = (rooms[roomId] || []).filter(id => id !== socket.id);
-      if (rooms[roomId] && rooms[roomId].length === 0) delete rooms[roomId];
-    });
   });
   socket.on('offer', ({ roomId, offer }) => {
     socket.to(roomId).emit('offer', offer);
@@ -355,6 +349,8 @@ io.on('connection', (socket) => {
     for (const roomId in roomUsers) {
       roomUsers[roomId].delete(socket.username);
     }
+    rooms[roomId] = (rooms[roomId] || []).filter(id => id !== socket.id);
+    if (rooms[roomId] && rooms[roomId].length === 0) delete rooms[roomId];
   });
 });
 
