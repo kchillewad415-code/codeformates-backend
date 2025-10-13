@@ -449,7 +449,6 @@ const adminUsername = 'admin';
 app.post('/api/admin-access', (req, res) => {
   const { username } = req.body;
   const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  console.log('Request IP:', userIP);
   if (username === adminUsername && userIP.includes(allowedIP)) {
     return res.json({ allowed: true });
   } else {
