@@ -277,17 +277,17 @@ io.on('connection', (socket) => {
     connectedUsers.get(userId).add(socket.id);
     io.emit('onlineUsers', connectedUsers.size);
   });
- socket.on('joinRoom', (roomId, username, callback) => {
-    if (!rooms[roomId]) rooms[roomId] = [];
-    rooms[roomId].push(socket.id);
-
-    // Assign role: first user is offerer, second is answerer
-    if (rooms[roomId].length === 1) {
-      callback && callback('offerer');
-    } else {
-      callback && callback('answerer');
-    }
+  socket.on('joinRoom', async (roomId, username) => {
     socket.join(roomId);
+    // Add user to roomUsers
+    if (!roomUsers[roomId]) roomUsers[roomId] = new Set();
+    roomUsers[roomId].add(username);
+    // Send chat history to the user
+    const messages = await Message.find({ roomId }).sort({ time: 1 });
+    socket.emit('chatHistory', messages);
+
+    // Handle WebRTC offer
+
   });
   socket.on('offer', ({ roomId, offer }) => {
     socket.to(roomId).emit('offer', offer);
@@ -336,6 +336,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+
     for (const [userId, sockets] of connectedUsers.entries()) {
       sockets.delete(socket.id);
       if (sockets.size === 0) {
@@ -348,7 +349,6 @@ io.on('connection', (socket) => {
     for (const roomId in roomUsers) {
       roomUsers[roomId].delete(socket.username);
     }
-    
   });
 });
 
