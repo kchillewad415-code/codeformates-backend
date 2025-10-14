@@ -443,18 +443,20 @@ app.post('/reOpenNotification', async (req, res) => {
 
 
 
-const allowedIP = '106.221.14.134'; // your IP
+const adminPhrase = process.env.ADMIN_PHRASE; // set in .env
 const adminUsername = 'admin';
 
 app.post('/api/admin-access', (req, res) => {
-  const { username } = req.body;
-  const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  if (username === adminUsername && userIP.includes(allowedIP)) {
+  const { phrase, username } = req.body;
+  if (username === adminUsername && phrase === adminPhrase) {
     return res.json({ allowed: true });
   } else {
     return res.json({ allowed: false });
   }
 });
+
+app.listen(5000, () => console.log("Server running on port 5000"));
+
 
 
 httpServer.listen(PORT, () => console.log(`CodeMate backend running on port ${PORT}`));
