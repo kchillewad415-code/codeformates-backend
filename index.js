@@ -9,6 +9,7 @@ import User from './models/User.js';
 import Session from './models/Session.js';
 import Message from './models/Message.js';
 import nodemailer from 'nodemailer';
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -36,13 +37,36 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const app = express();
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "*"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        connectSrc: ["'self'", "https://codeformates.com https://codefomates.vercel.app https://codeformates-backend.onrender.com"],
+      },
+    },
+  })
+);
 app.use(cors());
-
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  // Note: credentials (cookies, auth headers) **cannot** be used with '*'
-}));
+const allowedOrigins = [
+  "https://codefomates.vercel.app",
+  "https://codeformates.com"
+];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 // Serve uploaded files statically
